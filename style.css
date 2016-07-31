@@ -89,6 +89,8 @@ input {
 
 input, select, button {
 	width: 100%;
+  font-size: 50px;
+	font-family: sans-serif;
 }
 
 .recent-entries {
@@ -116,4 +118,89 @@ tbody .entry-row {
   height: 100%;
   margin-left: 20px;
   color: gray;	
+}
+
+.hidden-element {
+	visibility: hidden;
+}
+
+
+/*input[type="date"] {
+     -webkit-align-items: center;
+     display: -webkit-inline-flex;
+     font-family: monospace;
+     overflow: hidden;
+     padding: 0;
+     -webkit-padding-start: 1px;
+}
+
+input::-webkit-datetime-edit {
+    -webkit-flex: 1;
+    -webkit-user-modify: read-only !important;
+    display: inline-block;
+    min-width: 0;
+    overflow: hidden;
+}
+
+input::-webkit-datetime-edit-fields-wrapper {
+    -webkit-user-modify: read-only !important;
+    display: inline-block;
+    padding: 1px 0;
+    white-space: pre;
+}*/
+
+
+/*Loading Icon CSS (source: http://tobiasahlin.com/spinkit/) */
+
+.spinner {
+  margin: 100px auto;
+  width: 50px;
+  height: 40px;
+  text-align: center;
+  font-size: 10px;
+}
+
+.spinner > div {
+  background-color: #0da95f;
+  height: 100%;
+  width: 6px;
+  display: inline-block;
+  
+  -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
+  animation: sk-stretchdelay 1.2s infinite ease-in-out;
+}
+
+.spinner .rect2 {
+  -webkit-animation-delay: -1.1s;
+  animation-delay: -1.1s;
+}
+
+.spinner .rect3 {
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+
+.spinner .rect4 {
+  -webkit-animation-delay: -0.9s;
+  animation-delay: -0.9s;
+}
+
+.spinner .rect5 {
+  -webkit-animation-delay: -0.8s;
+  animation-delay: -0.8s;
+}
+
+@-webkit-keyframes sk-stretchdelay {
+  0%, 40%, 100% { -webkit-transform: scaleY(0.4) }  
+  20% { -webkit-transform: scaleY(1.0) }
+}
+
+@keyframes sk-stretchdelay {
+  0%, 40%, 100% { 
+    transform: scaleY(0.4);
+    -webkit-transform: scaleY(0.4);
+  }  20% { 
+    transform: scaleY(1.0);
+    -webkit-transform: scaleY(1.0);
+  }
 }
