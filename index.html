@@ -1,236 +1,93 @@
 <html>
-  <head>
-    <script type="text/javascript">
-      // Your Client ID can be retrieved from your project in the Google
-      // Developer Console, https://console.developers.google.com
-      var CLIENT_ID = '204251467419-6vrsj8f29kl1e2v8f0p6bp3802lm31i4.apps.googleusercontent.com';
-      var SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
+<head>
 
-      /**
-       * Check if current user has authorized this application.
-       */
-      function checkAuth() {
-        gapi.auth.authorize(
-          {
-            'client_id': CLIENT_ID,
-            'scope': SCOPES.join(' '),
-            'immediate': true
-          }, handleAuthResult);
-      }
+  <script src="./script.js">
+  </script>
+  <script src="https://apis.google.com/js/client.js?onload=checkAuth"> 
+  </script>
+  <link rel="stylesheet" href="./style.css">
+</head>
 
-      /**
-       * Handle response from authorization server.
-       *
-       * @param {Object} authResult Authorization result.
-       */
-      function handleAuthResult(authResult) {
-        var authorizeDiv = document.getElementById('authorize-div');
-        if (authResult && !authResult.error) {
-          // Hide auth UI, then load client library.
-          authorizeDiv.style.display = 'none';
-          loadSheetsApi();
-        } else {
-          // Show auth UI, allowing the user to initiate authorization by
-          // clicking authorize button.
-          authorizeDiv.style.display = 'inline';
-        }
-      }
-
-      /**
-       * Initiate auth flow in response to user clicking authorize button.
-       *
-       * @param {Event} event Button click event.
-       */
-      function handleAuthClick(event) {
-        gapi.auth.authorize(
-          {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
-          handleAuthResult);
-        return false;
-      }
-
-      /**
-       * Load Sheets API client library.
-       */
-      function loadSheetsApi() {
-        var discoveryUrl =
-            'https://sheets.googleapis.com/$discovery/rest?version=v4';
-        gapi.client.load(discoveryUrl)
-      }
-
-      var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      function getSheetName(date) {
-        var monthNumber = date.substr(5, 2)
-        var year = date.substr(2, 2)
-        var monthName = months[parseInt(monthNumber)-1]
-        var sheetName = monthName + " '" + year
-        return sheetName
-      }
-
-      function handleAddExpense() {
-
-        var date = document.getElementById('date').value;
-        var amount = document.getElementById('amount').value;
-        var category = document.getElementById('category').value;
-        var comment = document.getElementById('comment').value;
-        var paymentType = document.getElementById('paymentType').value;
-
-        console.log(date, amount, category, comment, paymentType)
-
-        var spreadsheetId = "1CIIEs7xbvf65NMrUMkfB0YFdpq1l2BSilAzIqj42A8c";
-        var sheetName = getSheetName(date)
-        console.log(sheetName)
-        var range = sheetName + "!A2:F2"
-
-        gapi.client.sheets.spreadsheets.values.append({
-          spreadsheetId: spreadsheetId,
-          range: range,
-          valueInputOption:  "USER_ENTERED",
-          insertDataOption:  "INSERT_ROWS",
-          "majorDimension": "ROWS",
-          "values": [
-            [date, amount, category, comment, paymentType]
-          ]
-        }).then(function(response) {
-          console.log(response);
-          getLast5Entries(response)
-        }, function(response) {
-          console.log('Error: ' + response.result.error.message);
-        });
-      }
-
-      function getLast5Entries(response){
-        var updatedRange = response.result.updates.updatedRange
-        console.log(updatedRange)
-        var startInd = updatedRange.indexOf("!");
-        var endInd = updatedRange.indexOf(":");
-        var rowNumberEnd = parseInt(updatedRange.substr(startInd+2, endInd));
-        var rowNumberStart = Math.max(rowNumberEnd - 4, 1)
-
-        var rangeRequired = updatedRange.substring(0, startInd+2) + rowNumberStart + updatedRange.substring(endInd)
-
-        gapi.client.sheets.spreadsheets.values.get({
-          spreadsheetId: '1CIIEs7xbvf65NMrUMkfB0YFdpq1l2BSilAzIqj42A8c',
-          range: rangeRequired,
-        }).then(function(response) {
-          console.log(response.result)
-          showLast5Entries(response.result.values);
-        }, function(response) {
-          appendPre('Error: ' + response.result.error.message);
-        });
-        console.log(rangeRequired)
-      }
-
-      function showLast5Entries(values){
-
-        document.getElementById("entries-body").innerHTML = "";
-
-        for (i = values.length - 1; i > -1 ; i--) {
-          var data = values[i];
-          var table = document.getElementById("entries-body");
-          var row = table.insertRow(-1);
-          var cell0 = row.insertCell(0);
-          var cell1 = row.insertCell(1);
-          var cell2 = row.insertCell(2);
-          var cell3 = row.insertCell(3);
-          var cell4 = row.insertCell(4);
-          cell0.innerHTML = data[0];
-          cell1.innerHTML = data[1];
-          cell2.innerHTML = data[2];
-          cell3.innerHTML = data[3];
-          cell4.innerHTML = data[4];
-          row.className = "entry-row"
-        }
-      }
-
-      window.onload = function(e) {
-        console.log(new Date())
-        console.log(document.getElementById('date'))
-        document.getElementById('date').valueAsDate = new Date();        
-        document.getElementById('amount').focus();
-      }
-
-    </script>
-    <script src="https://apis.google.com/js/client.js?onload=checkAuth">
-    </script>
-    <link rel="stylesheet" href="./style.css">
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">Expenses</div>
-      <div class="form-content">
-        <div id="authorize-div" style="display: none">
-          <span>Authorize access to Google Sheets API</span>
-          <!--Button for the user to click to initiate auth sequence -->
-          <button id="authorize-button" onclick="handleAuthClick(event)">
-            Authorize
-          </button>
-        </div>
-
-        <div class="form-item input-container date">
-          <input class="formInput" id="date" type="date" required="required" placeholder="Date" /> 
-        </div>
-
-        <div class="form-item amount">
-          <div class="placeholder">AMOUNT</div>
-          <input class="formInput" id="amount" type="number" />         
-        </div>
-
-        <div class="form-item input-container">
-          <select  class="formInput" id="category">
-            <option value="Lunch">Lunch</option>
-            <option value="Dinner">Dinner</option>
-            <option value="Grocery">Grocery</option>
-            <option value="Entertainment">Entertainment</option>
-            <option value="Transport">Transport</option>
-            <option value="Toiletries">Toiletries</option>
-            <option value="Soft Drink, Coffee">Soft Drink, Coffee</option>
-            <option value="Alcohol">Alcohol</option>
-            <option value="Conbini">Conbini</option>
-            <option value="Other">Other</option>
-            <option value="Bills, Rent">Bills, Rent</option>
-            <option value="Fitness">Fitness</option>
-          </select>
-        </div>
-
-        <div class="form-item input-container">
-          <select  class="formInput" id="paymentType">
-            <option value="Cash">Cash</option>
-            <option value="Visa SMBC">Visa SMBC</option>
-            <option value="JCB SMBC">JCB SMBC</option>
-            <option value="Splitwise">Splitwise</option>
-          </select>
-        </div>
-
-        <div class="form-item comment-box">
-          <input  class="formInput" id="comment" type="text" placeholder="Comment, if any" /> 
-        </div>
-
-        <div class="form-item btn-container">
-          <button id="Add" onclick="handleAddExpense(event)">
-            Add Expense
-          </button>
-        </div>
+<body>
+  <div class="container">
+    <div class="header">Expenses</div>
+    <div class="form-content">
+      <div id="authorize-div" style="display: none">
+        <span>Authorize access to Google Sheets API</span>
+        <!--Button for the user to click to initiate auth sequence -->
+        <button id="authorize-button" onclick="handleAuthClick(event)">
+          Authorize
+        </button>
       </div>
 
-      <table class="recent-entries">
-        <thead>
-           <tr>
-            <th>Date</th>
-            <th>Amount</th>
-            <th>Category</th>
-            <th>Comment</th>
-            <th>Payment Type</th>
-          </tr>
-          <tbody id="entries-body">
-            <tr class="entry-row"><td>30 Jul 2016</td><td>123</td><td>Lunch</td><td>text</td><td>Cash</td></tr>
-            <tr class="entry-row"><td>30 Jul 2016</td><td>123</td><td>Lunch</td><td>text</td><td>Cash</td></tr>
-            <tr class="entry-row"><td>30 Jul 2016</td><td>123</td><td>Lunch</td><td>text</td><td>Cash</td></tr>
-            <tr class="entry-row"><td>30 Jul 2016</td><td>123</td><td>Lunch</td><td>text</td><td>Cash</td></tr>
-            <tr class="entry-row"><td>30 Jul 2016</td><td>123</td><td>Lunch</td><td>text</td><td>Cash</td></tr>
-          </tbody>
-        </thead>
-      </table>
+      <div class="form-item input-container date">
+        <input class="formInput" id="date" type="date" required="required" placeholder="Date" /> 
+      </div>
 
+      <div class="form-item amount">
+        <div class="placeholder">AMOUNT</div>
+        <input class="formInput" id="amount" type="number" />         
+      </div>
+
+      <div class="form-item input-container">
+        <select  class="formInput" id="category">
+          <option value="Lunch">Lunch</option>
+          <option value="Dinner">Dinner</option>
+          <option value="Grocery">Grocery</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Transport">Transport</option>
+          <option value="Toiletries">Toiletries</option>
+          <option value="Soft Drink, Coffee">Soft Drink, Coffee</option>
+          <option value="Alcohol">Alcohol</option>
+          <option value="Conbini">Conbini</option>
+          <option value="Other">Other</option>
+          <option value="Bills, Rent">Bills, Rent</option>
+          <option value="Fitness">Fitness</option>
+        </select>
+      </div>
+
+      <div class="form-item input-container">
+        <select  class="formInput" id="paymentType">
+          <option value="Cash">Cash</option>
+          <option value="Visa SMBC">Visa SMBC</option>
+          <option value="JCB SMBC">JCB SMBC</option>
+          <option value="Splitwise">Splitwise</option>
+        </select>
+      </div>
+
+      <div class="form-item comment-box">
+        <input  class="formInput" id="comment" type="text" placeholder="Comment, if any" /> 
+      </div>
+
+      <div  id="addDiv" class="form-item btn-container hidden-element">
+        <button id="Add" onclick="handleAddExpense(event)">
+          Add Expense
+        </button>
+      </div>
     </div>
-  </body>
+
+    <div id="spinner" class="spinner">
+      <div class="rect1"></div>
+      <div class="rect2"></div>
+      <div class="rect3"></div>
+      <div class="rect4"></div>
+      <div class="rect5"></div>
+    </div>
+
+    <table class="recent-entries">
+      <thead>
+       <tr>
+        <th>Date</th>
+        <th>Amount</th>
+        <th>Category</th>
+        <th>Comment</th>
+        <th>Payment Type</th>
+      </tr>
+      <tbody id="entries-body">
+      </tbody>
+    </thead>
+  </table>
+
+</div>
+</body>
 </html>
