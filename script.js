@@ -82,7 +82,7 @@ function handleAddExpense() {
 
     console.log(date, amount, category, comment, paymentType)
 
-    var spreadsheetId = "1CIIEs7xbvf65NMrUMkfB0YFdpq1l2BSilAzIqj42A8c";
+    var spreadsheetId = "1Ms2ZOgSgTfVBYy1Rafb9_le7gE696_sdJrrL2GDaYpU";
     var sheetName = getSheetName(date)
     console.log(sheetName)
     var range = sheetName + "!A2:F2"
@@ -123,7 +123,7 @@ function getLast5Entries(response){
   var rangeRequired = updatedRange.substring(0, startInd+2) + rowNumberStart + updatedRange.substring(endInd)
 
   gapi.client.sheets.spreadsheets.values.get({
-    spreadsheetId: '1CIIEs7xbvf65NMrUMkfB0YFdpq1l2BSilAzIqj42A8c',
+    spreadsheetId: '1Ms2ZOgSgTfVBYy1Rafb9_le7gE696_sdJrrL2GDaYpU',
     range: rangeRequired,
   }).then(function(response) {
     console.log(response.result)
@@ -161,6 +161,6 @@ function showLast5Entries(values){
 window.onload = function(e) {
   console.log(new Date())
   console.log(document.getElementById('date'))
-  document.getElementById('date').valueAsDate = new Date();        
+  document.getElementById('date').valueAsDate = new Date();
   document.getElementById('amount').focus();
 }
