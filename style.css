@@ -29,7 +29,7 @@ div {
   padding: 20px;
   display: flex;
   flex-direction: column;
-  flex: 1 0 1px;    
+  flex: 1 0 1px;
 }
 
 .form-item {
@@ -55,7 +55,7 @@ div {
   border-radius: 4px;
   background: #cdd8e0;
   border: 0;
-  cursor: pointer;	
+  cursor: pointer;
 }
 
 .input-container input, select {
@@ -117,13 +117,28 @@ tbody .entry-row {
   align-items: center;
   height: 100%;
   margin-left: 20px;
-  color: gray;	
+  color: gray;
 }
 
 .hidden-element {
 	visibility: hidden;
 }
 
+#summary-container {
+  padding: 20px;
+  display: flex;
+}
+
+#summary-container > div {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 1px;
+  font-size: 22px;
+}
+
+#summary-item-0 {
+  color: red;
+}
 
 /*input[type="date"] {
      -webkit-align-items: center;
@@ -165,7 +180,7 @@ input::-webkit-datetime-edit-fields-wrapper {
   height: 100%;
   width: 6px;
   display: inline-block;
-  
+
   -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
   animation: sk-stretchdelay 1.2s infinite ease-in-out;
 }
@@ -191,15 +206,15 @@ input::-webkit-datetime-edit-fields-wrapper {
 }
 
 @-webkit-keyframes sk-stretchdelay {
-  0%, 40%, 100% { -webkit-transform: scaleY(0.4) }  
+  0%, 40%, 100% { -webkit-transform: scaleY(0.4) }
   20% { -webkit-transform: scaleY(1.0) }
 }
 
 @keyframes sk-stretchdelay {
-  0%, 40%, 100% { 
+  0%, 40%, 100% {
     transform: scaleY(0.4);
     -webkit-transform: scaleY(0.4);
-  }  20% { 
+  }  20% {
     transform: scaleY(1.0);
     -webkit-transform: scaleY(1.0);
   }
