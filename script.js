@@ -3,7 +3,7 @@
 // Developer Console, https://console.developers.google.com
 var CLIENT_ID = '204251467419-6vrsj8f29kl1e2v8f0p6bp3802lm31i4.apps.googleusercontent.com';
 var SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
-
+var SPREAD_SHEET_ID = "1Ms2ZOgSgTfVBYy1Rafb9_le7gE696_sdJrrL2GDaYpU";
 /**
  * Check if current user has authorized this application.
  */
@@ -55,7 +55,7 @@ function loadSheetsApi() {
   console.log("LOADING SHEETS")
   var discoveryUrl =
   'https://sheets.googleapis.com/$discovery/rest?version=v4';
-  gapi.client.load(discoveryUrl, "v4", toggleButtonAndLoading)
+  gapi.client.load(discoveryUrl).then(getSummaries);
 }
 
 var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -82,7 +82,7 @@ function handleAddExpense() {
 
     console.log(date, amount, category, comment, paymentType)
 
-    var spreadsheetId = "1Ms2ZOgSgTfVBYy1Rafb9_le7gE696_sdJrrL2GDaYpU";
+    var spreadsheetId = SPREAD_SHEET_ID;
     var sheetName = getSheetName(date)
     console.log(sheetName)
     var range = sheetName + "!A2:F2"
@@ -123,7 +123,7 @@ function getLast5Entries(response){
   var rangeRequired = updatedRange.substring(0, startInd+2) + rowNumberStart + updatedRange.substring(endInd)
 
   gapi.client.sheets.spreadsheets.values.get({
-    spreadsheetId: '1Ms2ZOgSgTfVBYy1Rafb9_le7gE696_sdJrrL2GDaYpU',
+    spreadsheetId: SPREAD_SHEET_ID,
     range: rangeRequired,
   }).then(function(response) {
     console.log(response.result)
@@ -156,6 +156,46 @@ function showLast5Entries(values){
     cell4.innerHTML = data[4];
     row.className = "entry-row"
   }
+}
+
+function getSummaries() {
+  toggleButtonAndLoading();
+
+  var date = document.getElementById('date').value;
+  var sheetName = getSheetName(date);
+  var range = sheetName + "!G2:H14";
+
+  gapi.client.sheets.spreadsheets.values.get({
+    spreadsheetId: SPREAD_SHEET_ID,
+    range: range,
+  }).then(function(response) {
+    showSummaries(response.result.values);
+  }, function(response) {
+    appendPre('Error: ' + response.result.error.message);
+  });
+}
+
+function showSummaries(values) {
+  var summaryContainer = document.getElementById('summary-container');
+  summaryContainer.innerHTML = "";
+
+  var total = values.pop();
+  appendSummary(summaryContainer, total, 0);
+
+  var sorted = values.sort(function(a, b) { return ((a[1] - b[1]) > 0) ? 1 : -1; }).reverse();
+
+  for (i = 0; i <= 3 ; i++) {
+    var row = sorted[i];
+    appendSummary(summaryContainer, row, i+1);
+  }
+}
+
+function appendSummary(summaryContainer, data, index) {
+  var summaryItem = document.createElement('div');
+  summaryItem.id = "summary-item-" + index;
+  summaryContainer.appendChild(summaryItem);
+
+  document.getElementById("summary-item-" + index).innerHTML = "<label>" + data[0] + "</label><value>" + data[1] + "</value>";
 }
 
 window.onload = function(e) {
